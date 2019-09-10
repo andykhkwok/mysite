@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+<div class="post-body">
+    {{ post.text }}
+</div>
+<div class="post-score">
+    Current score: {{ post.score }}
+</div>
+<div class="post-vote">
+    <form method="POST">
+        {% csrf_token %}
+        <input type="submit" name="vote" value="Yes">
+        <input type="submit" name="vote" value="No">
+    </form>
+</div>
+{% endblock %}
