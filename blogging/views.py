@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django import forms
+from django.utils import timezone
 
 # Create your views here.
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from blogging.models import Post
+
+from blogging.forms import MyPostForm
 
 def list_view(request):
     published = Post.objects.exclude(published_date__exact=None)
@@ -37,3 +41,21 @@ def stub_view(request, *args, **kwargs):
         body += "Kwargs:\n"
         body += "\n".join(["\t%s: %s" % i for i in kwargs.items()])
     return HttpResponse(body, content_type="text/plain")
+
+def add_model(request):
+    if request.method == "POST":
+        form = MyPostForm(request.POST)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            if model_instance.created_date is None:
+                model_instance.created_date = timezone.now()
+                model_instance.modified_date = timezone.now()
+                model_instance.published_date = timezone.now()
+            else:
+                model_instance.modified_date = timezone.now()
+                model_instance.published_date = timezone.now()                
+            model_instance.save()
+            return redirect('/')
+    else:
+        form = MyPostForm()
+        return render(request, "blogging/my_template.html", {'form': form})
