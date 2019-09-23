@@ -18,7 +18,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-        
+
 class Category(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True)
